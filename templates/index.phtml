@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Slim 3</title>
+        <link href='//fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>        
+    </head>
+    <body>
+        <header class="site-header">
+            <div class="container">
+                
+                <nav class="navbar navbar-default">
+                  <div class="container-fluid">
+                    <div class="navbar-header">
+                      <a class="navbar-brand" href="/">My Play List</a>
+                    </div>
+                    <ul class="nav navbar-nav">
+                      <li class="active"><a href="/">Home</a></li>
+                      <li class=""><a href="/topten"> Top 10 </a></li>
+                     <?php  if( isset($_SESSION['username']) ): ?>
+                            
+                            <li class=""><a href="/addvideos"> Add Video </a></li>   
+                            <li class=""><a href="/logout">Logout</a></li>           
+                      <?php else:  ?>                         
+                        <li class=""><a href="/login">Login</a></li>     
+                      <?php endif; ?>
+                    </ul>
+                  </div>
+                </nav>
+            </div>
+        </header> <!-- .site-header -->
+        <main class="main-content">
+            <div class="fullwidth-block inner-content">
+                <div class="container">
+                    <div class="container">
+                        <?php
+                        if(count($videos) > 0):   
+                            $videoplay = $videos[0];
+                            if(isset($play)) {
+                                if(count($play) > 0)
+                                    $videoplay = $play[0];
+                            }
+                        ?>
+                       <div style="padding: 10px; margin-bottom: 20px;">
+                            <div class="row">
+                                <h4><?php echo $videoplay["title"] ?></h4>
+                            </div>
+                            <div class="row">
+                            <iframe width="560" height="315" src="<?php echo $videoplay["link"] ?>" frameborder="0" allowfullscreen></iframe>
+                            <div>
+                            <div class="row">
+                                <a style="margin-left: 20px;" href="/votes/<?php echo $videoplay["id"]; ?>" class="btn btn-info"> Like </a> &nbsp;&nbsp;&nbsp; Number like: <?php echo $videoplay["votes"]; ?>
+                            </div>
+                        </div>  
+                         <div style="padding: 10px; margin-bottom: 20px;">
+                        <?php
+                             if(isset($topten)):
+                                ?>
+
+                                <div class="row">
+                                    <h4> Top 10 video votes</h4>
+                                </div>
+                                <?php 
+                                endif;
+                            $i = 1;
+                            foreach($videos as $video): 
+                               
+                                echo "<div class='row'><h4> ".$i." - (".$video["votes"].") votes - <a href='/play/".$video["id"]."'>".$video["title"]."</a></h4></div>";
+                                ?>
+                                
+                                              
+
+                        <?php 
+                            $i++;
+                            endforeach; ?>
+                        </div>         
+                        <?php else: ?>
+                        <p>No current tickets</p>
+                        <?php endif; ?>
+                        
+                    </div>
+                </div>
+            </div>
+
+                        
+        </main> 
+    </body>
+</html>
