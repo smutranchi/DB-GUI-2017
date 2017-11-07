@@ -53,19 +53,30 @@ class ClassVideos
         $sql = "insert into videos
             (title, link, votes) values
             (:title, :link, :votes )";
+		
 
-        $stmt = $this->db->prepare($sql);
-        $result = $stmt->execute([
+		function get_youtube_id_from_url($url)
+			{
+			if (stristr($url,'youtu.be/'))
+				{preg_match('/(https:|http:|)(\/\/www\.|\/\/|)(.*?)\/(.{11})/i', $url, $final_ID); return $final_ID[4]; }
+			else 
+				{@preg_match('/(https:|http:|):(\/\/www\.|\/\/|)(.*?)\/(embed\/|watch.*?v=|)([a-z_A-Z0-9\-]{11})/i', $url, $IDD); return $IDD[5]; }
+			}
+
+
+			$stmt = $this->db->prepare($sql);
+			$result = $stmt->execute([
             "title" => $title,
-            "link" => $link,
+            "link" => get_youtube_id_from_url($link),
             "votes" => 0,
         ]);
 
-        if(!$result) {
-            return 'error, not connect db';
+			if(!$result) {
+				return 'Error! No database connection.';
 
-        }
-        return 'add video success!';
+			}
+			return 'New Youtube Video has been added!';
+		
     }
 
     public function VotesVideo($id, $votes) {
@@ -80,10 +91,10 @@ class ClassVideos
         ]);
 
         if(!$result) {
-            return 'error, not connect db';
+            return 'Error! No database connection.';
 
         }
-        return 'add video success!';
+        return 'You voted for video!';
 
     }
     

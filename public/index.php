@@ -1,16 +1,26 @@
 <?php
+if (PHP_SAPI == 'cli-server') {
+    // To help the built-in PHP dev server, check if the request was actually for
+    // something which should probably be served as a static file
+    $url  = parse_url($_SERVER['REQUEST_URI']);
+    $file = __DIR__ . $url['path'];
+    if (is_file($file)) {
+        return false;
+    }
+}
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../classes/ClassVideos.php';
 require __DIR__ . '/../classes/ClassUsers.php';
+require __DIR__ . '/../classes/ClassUsersLikeVideos.php';
 
 
 $config['displayErrorDetails'] = true;
-$config['db']['host']   = "localhost";
-$config['db']['user']   = "root";
-$config['db']['pass']   = "123456";
+$config['db']['host']   = "myplaylist.cycoalcmburk.us-east-1.rds.amazonaws.com";
+$config['db']['user']   = "dbguidev";
+$config['db']['pass']   = "dbguiproject";
 $config['db']['dbname'] = "myplaylist";
 
 
@@ -71,21 +81,27 @@ $app->get('/logout', function (Request $request, Response $response, array $args
 $app->post('/login', function (Request $request, Response $response, array $args) {
     $messager = "";
     $user = new ClassUsers($this->db);
-    $data = $request->getParsedBody();   
-    $username = filter_var($data['username'], FILTER_SANITIZE_STRING);
-    $pass = filter_var($data['password'], FILTER_SANITIZE_STRING);
     
+    $json = $request->getBody();   
+    $mydata = json_decode($json,true);    
+    $username = $mydata["username"];
+    $pass = $mydata["password"];
+
     $check = $user->checkLogin($username,$pass);
 
+    
+    $url = "";
     if(!$check)
-    	$messager = "Please input corect username and password!";
+        $messager = "Please input corect username and password!";
     else
     {    
-     	session_start();	
-    	$_SESSION['username']=$username;
-    	return $response->withRedirect('/'); 
+        session_start();    
+        $_SESSION['username']=$username;
+        $url = "/";
     }
-    return $this->view->render($response, 'login.phtml', ["messager" => $messager, "router" => $this->router]);
+    $data = array('messager' => $messager , 'url' => $url);   
+    return $response->withJson($data,200,
+        JSON_UNESCAPED_UNICODE);    
 });
 
 $app->get('/addvideos', function (Request $request, Response $response) {    
@@ -108,6 +124,7 @@ $app->post('/addvideos', function (Request $request, Response $response) {
 });
 
 $app->get('/play/{id}', function (Request $request, Response $response, $args) {
+    session_start();
     $video_id = (int)$args['id'];    
     $classvideos = new ClassVideos($this->db);
     $videos =  $classvideos->getTopTen();
@@ -116,17 +133,158 @@ $app->get('/play/{id}', function (Request $request, Response $response, $args) {
     return $this->view->render($response, 'index.phtml', ["videos" => $videos, "play" => $play,"router" => $this->router]);
 });
 
-$app->get('/votes/{id}', function (Request $request, Response $response, $args) {
+$app->get('/votes/{id}', function (Request $request, Response $response, $args) {    
+    session_start();
     $video_id = (int)$args['id'];    
+    $islike = false;
+    $disableBtnLike = "";
+    $classlikevideo = new ClassUsersLikeVideos($this->db);
+    if(isset($_SESSION['username']))
+    {
+        $username = $_SESSION['username'];        
+        $islike = $classlikevideo->checkUserIsLikeVideo($username, $video_id );    
+    }
     $classvideos = new ClassVideos($this->db);
-    $video = $classvideos->getVideoById($video_id);
-    $votes = 0;
-    if(count($video)>0)
-    	$votes = (int)$video[0]['votes']+1;
-    $e = $classvideos->VotesVideo($video_id, $votes);  
-    $videos =  $classvideos->getTopTen();    
+    if(!$islike)
+    {
+        $video = $classvideos->getVideoById($video_id);
+        $votes = 0;
+        if(count($video)>0)
+            $votes = (int)$video[0]['votes']+1;
+        $e = $classvideos->VotesVideo($video_id, $votes);  
+        $userlike = $classlikevideo->UserVotesVideo($username, $video_id ); 
+    }
+    else
+    {
+        $disableBtnLike = "disabled='disabled'";
+    }    
+    $videos =  $classvideos->getVideos();    
     $play = $classvideos->getVideoById($video_id); 
-    return $this->view->render($response, 'index.phtml', ["videos" => $videos, "play" => $play,"router" => $this->router]);	
+    return $this->view->render($response, 'index.phtml', ["disableBtnLike" => $disableBtnLike, "videos" => $videos, "play" => $play,"router" => $this->router]);	
 });
+
+$app->get('/register', function (Request $request, Response $response, array $args) {
+    session_start();    
+    if(  isset($_SESSION['username']) )
+    {
+        return $response->withRedirect('/');
+    }
+    $messager = "";
+    return $this->view->render($response, 'register.phtml', ["messager" => $messager, "router" => $this->router]);
+});
+
+$app->post('/checkUserExists', function (Request $request, Response $response, array $args) {   
+    $json = $request->getBody();   
+    $mydata = json_decode($json,true);    
+    $username = $mydata["username"];
+    $user = new ClassUsers($this->db);
+    $check = $user->checkUserExists($username);
+    $isexists = "";
+    if($check) $isexists = "isexists";
+    $data = array('checkExists' => $check , 'username' => $username, 'isexists' => $isexists);   
+   return $response->withJson($data,200,
+        JSON_UNESCAPED_UNICODE);
+});
+
+$app->post('/register', function (Request $request, Response $response, array $args) {
+    $json = $request->getBody();   
+    $mydata = json_decode($json,true);    
+    $username = $mydata["username"];
+    $pass = $mydata["password"];
+    $user = new ClassUsers($this->db);
+    $messager = $user->register($username, $pass);
+
+    $data = array('messager' => $messager , 'username' => $username);   
+   return $response->withJson($data,200,
+        JSON_UNESCAPED_UNICODE);
+});
+
+//for searching video
+$app->get('/search-video', function (Request $request, Response $response, $args) {
+     session_start();  
+    return $this->view->render($response, 'search-video.phtml', ["router" => $this->router]);
+});
+
+$app->post('/search-video', function (Request $request, Response $response, $args) {
+	$data = $request->getParsedBody();	
+	$keyword = '';
+	$keyword = filter_var($data['keyword'], FILTER_SANITIZE_STRING);
+	
+	$message = "";
+	$videos = '';
+	$channels = '';
+	$playlists = '';
+		
+	$DEVELOPER_KEY = 'AIzaSyDyJOLf4HzvRa6yGcgoF_bSa7zK2H4yGjw';
+
+	$client = new Google_Client();
+	$client->setDeveloperKey($DEVELOPER_KEY);
+
+	// Define an object that will be used to make all API requests.
+	$youtube = new Google_Service_YouTube($client);
+
+	try {
+
+		// Call the search.list method to retrieve results matching the specified
+		// query term.
+		$searchResponse = $youtube->search->listSearch('id,snippet', array(
+		  'q' => $keyword,
+		  'maxResults' => 10,
+		));
+
+		
+        $listVideo = [];
+		// Add each result to the appropriate list, and then display the lists of
+		// matching videos, channels, and playlists.
+        $i = 0;
+		foreach ($searchResponse['items'] as $searchResult) {
+		  switch ($searchResult['id']['kind']) {
+			case 'youtube#video':
+			  $videos .= sprintf('<li>%s (%s)</li>',
+				  $searchResult['snippet']['title'], $searchResult['id']['videoId']);
+                  $listVideo[$i]['title']   =  $searchResult['snippet']['title'];//, 'id':  };
+                  $listVideo[$i]['id']      =  $searchResult['id']['videoId'];
+                  $i++;
+			  break;
+			case 'youtube#channel':
+			  $channels .= sprintf('<li>%s (%s)</li>',
+				  $searchResult['snippet']['title'], $searchResult['id']['channelId']);
+                    $listVideo[$i]['title']    =  $searchResult['snippet']['title'];
+                    $listVideo[$i]['id']       =  $searchResult['id']['channelId'];
+                    $i++;
+			  break;
+			case 'youtube#playlist':
+			  $playlists .= sprintf('<li>%s (%s)</li>',
+				  $searchResult['snippet']['title'], $searchResult['id']['playlistId']);
+                    $listVideo[$i]['title']       =  $searchResult['snippet']['title'];
+                    $listVideo[$i]['id']          =  $searchResult['id']['playlistId'];
+                    $i++;
+			  break;
+		  }
+		}
+
+	} catch (Google_Service_Exception $e) {
+		$message .= sprintf('<p>A service error occurred: <code>%s</code></p>',
+		htmlspecialchars($e->getMessage()));
+	} catch (Google_Exception $e) {
+		$message .= sprintf('<p>An client error occurred: <code>%s</code></p>',
+		htmlspecialchars($e->getMessage()));
+	}
+    $message = count($listVideo);
+    return $this->view->render($response, 'search-video.phtml', ["keyword" => $keyword, "message" => $message, "videos" => $videos, "listVideo" => $listVideo, "router" => $this->router]);
+});
+
+// test new login
+$app->get('/old-login', function (Request $request, Response $response, array $args) {
+	session_start();	
+	if(  isset($_SESSION['username']) )
+	{
+		return $response->withRedirect('/');
+	}
+    $messager = "";
+    return $this->view->render($response, 'old-login.phtml', ["messager" => $messager, "router" => $this->router]);
+});
+
+
 
 $app->run();

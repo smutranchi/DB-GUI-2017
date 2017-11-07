@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Search Video</title>
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <script src="/js/jquery-1.11.1.min.js"></script>
+        <script src="/js/bootstrap.min.js"></script>        
+    </head>
+    <body>
+        <header class="site-header">
+            <div class="container">
+                
+                <nav class="navbar navbar-default">
+                  <div class="container-fluid">
+                    <div class="navbar-header">
+                      <a class="navbar-brand" href="/">My YOUTUBE Playlist</a>
+                    </div>
+                    <ul class="nav navbar-nav">
+                      <li class=""><a href="/">Home</a></li>
+                      <li class=""><a href="/topten"> Top 10 </a></li>
+                      <li class="active"><a href="/search-video"> Search Video </a></li>
+                	  <?php  if( isset($_SESSION['username']) ): ?>
+                            
+                            <li class=""><a href="/addvideos"> Add Video </a></li>   
+                            <li class=""><a href="/logout">Logout</a></li>           
+                      <?php else:  ?>                         
+                        <li class=""><a href="/login">Login</a></li>
+                        <li class=""><a href="/register">Register</a></li>     
+                      <?php endif; ?>
+                    </ul>
+                  </div>
+                </nav>
+            </div>
+        </header> <!-- .site-header -->
+        <main class="main-content">
+            <div class="fullwidth-block inner-content">
+                <div class="container">
+                    <div class="container">
+                        <h4>Search for videos</h4>
+						<form method="post" action="search-video" class="col-md-8" >
+							<div style="margin-bottom: 20px;">							
+								<div class="col-md-12  form-group"></div>							
+							</div>
+							<div style="margin-bottom: 20px;">							
+								<div class="col-md-12  form-group">
+									<input class="form-control" type="text" placeholder="keyword" name="keyword"
+										value = "<?php if(isset($keyword)) echo $keyword; ?>"
+									>
+								</div>							
+							</div>
+							<div style="margin-bottom: 20px;">
+								<div class="col-md-12  form-group">
+									<input class="btn btn-info" type="submit" value="Search" name="searchVideo">
+								</div>
+							</div>
+						</form>
+                    </div>
+					
+					<br/>
+					<?php if(isset($keyword)) { ?>
+						<div class="container">
+						  <h4>Search YOUTUBE videos with: '<?= $keyword?>'</h4>
+						  <div class="list-group">
+							<a href="#" class="list-group-item active">
+							  <h4 class="list-group-item-heading">List searched YOUTUBE videos</h4>
+							  <!-- <p class="list-group-item-text"><?php echo $videos?></p> -->
+							</a>
+							<!--
+							<a href="#" class="list-group-item">
+							  <h4 class="list-group-item-heading">Third List Group Item Heading</h4>
+							  <p class="list-group-item-text">List Group Item Text</p>
+							</a>
+							-->
+						  </div>
+						  	<?php 
+						  	if(count($listVideo) > 0):  
+ 								foreach($listVideo as $vd): 
+						  		?>
+	                           <div class="list-group" style="padding-left: 100px;">
+	                           		<div class="row">
+							  			<h4><?= $vd['title']?></h4>
+										<h4><?php echo "URL: " . "https://www.youtube.com/" . $vd['id'] ?></h4>
+							  		</div>
+							  		<div class="row">
+							  		<iframe width="560" height="315" src="https://www.youtube.com/embed/<?= $vd['id']?>" frameborder="0" allowfullscreen></iframe>
+							  		</div>
+							  </div>
+                    	  	<?php endforeach;	endif;?>
+						  
+						</div>
+					<?php }?>
+                </div>
+            </div>
+
+                        
+        </main> 
+    </body>
+</html>
