@@ -11,7 +11,7 @@ if (PHP_SAPI == 'cli-server') {
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-require __DIR__ . '/../vendor/autoload.php';
+/*require __DIR__ . '/../vendor/autoload.php';
 require __DIR__ . '/../classes/ClassVideos.php';
 require __DIR__ . '/../classes/ClassUsers.php';
 require __DIR__ . '/../classes/ClassUsersLikeVideos.php';
@@ -283,7 +283,7 @@ $app->get('/old-login', function (Request $request, Response $response, array $a
 	}
     $messager = "";
     return $this->view->render($response, 'old-login.phtml', ["messager" => $messager, "router" => $this->router]);
-});
+});*/
 
 
 

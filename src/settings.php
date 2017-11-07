@@ -15,10 +15,11 @@ return [
             'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
             'level' => \Monolog\Logger::DEBUG,
         ],
+        //connection settings
         'db' => [
-            'host' => 'localhost',
-            'user' => 'userdev',
-            'pass' => '123456',
+            'host' => 'myplaylist.cycoalcmburk.us-east-1.rds.amazonaws.com"',
+            'user' => 'dbguidev',
+            'pass' => 'dbguiproject',
             'dbname' => 'myplaylist'
         ]
     ],
