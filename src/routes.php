@@ -8,8 +8,8 @@ require __DIR__ . '/../classes/ClassVideos.php';
 require __DIR__ . '/../classes/ClassUsers.php';
 require __DIR__ . '/../classes/ClassUsersLikeVideos.php';
 
-use \Psr\Http\Message\ServerRequestInterface as Request;
-use \Psr\Http\Message\ResponseInterface as Response;
+//use \Psr\Http\Message\ServerRequestInterface as Request;
+//use \Psr\Http\Message\ResponseInterface as Response;
 
 // Routes
 

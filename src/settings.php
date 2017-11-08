@@ -17,7 +17,7 @@ return [
         ],
         //connection settings
         'db' => [
-            'host' => 'myplaylist.cycoalcmburk.us-east-1.rds.amazonaws.com"',
+            'host' => 'myplaylist.cycoalcmburk.us-east-1.rds.amazonaws.com',
             'user' => 'dbguidev',
             'pass' => 'dbguiproject',
             'dbname' => 'myplaylist'
