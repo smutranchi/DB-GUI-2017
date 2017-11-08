@@ -22,7 +22,9 @@ require __DIR__ . '/../classes/ClassUsersLikeVideos.php';
 });*/
 //homepage of the video
 $app->get('/', function (Request $request, Response $response, array $args) {
-	session_start(); 
+    if(session_id() == ''){
+        session_start(); 
+    } 
     $classvideos = new ClassVideos($this->db);
     $videos =  $classvideos->getVideos();
     // Render index view
@@ -30,7 +32,9 @@ $app->get('/', function (Request $request, Response $response, array $args) {
 });
 
 $app->get('/topten', function (Request $request, Response $response, array $args) {
-	session_start(); 
+    if(session_id() == ''){
+        session_start(); 
+    } 
     $classvideos = new ClassVideos($this->db);
     $videos =  $classvideos->getTopTen();
     // Render index view
@@ -38,7 +42,7 @@ $app->get('/topten', function (Request $request, Response $response, array $args
 });
 
 $app->get('/login', function (Request $request, Response $response, array $args) {
-	session_start();	
+	if(session_id() == ''){session_start();}	
 	if(  isset($_SESSION['username']) )
 	{
 		return $response->withRedirect('/');
@@ -48,7 +52,7 @@ $app->get('/login', function (Request $request, Response $response, array $args)
 });
 
 $app->get('/logout', function (Request $request, Response $response, array $args) {
-	session_start();	
+	if(session_id() == ''){session_start();}	
 	session_destroy();
 	unset($_SESSION['username']);
     return $response->withRedirect('/'); 
@@ -71,7 +75,7 @@ $app->post('/login', function (Request $request, Response $response, array $args
         $messager = "Please input corect username and password!";
     else
     {    
-        session_start();    
+        if(session_id() == ''){session_start();}    
         $_SESSION['username']=$username;
         $url = "/";
     }
@@ -81,7 +85,7 @@ $app->post('/login', function (Request $request, Response $response, array $args
 });
 
 $app->get('/addvideos', function (Request $request, Response $response) {    
-	session_start();	
+	if(session_id() == ''){session_start();}	
 	if(!isset($_SESSION['username']) )
 	{
 		return $response->withRedirect('/login');
@@ -100,7 +104,7 @@ $app->post('/addvideos', function (Request $request, Response $response) {
 });
 
 $app->get('/play/{id}', function (Request $request, Response $response, $args) {
-    session_start();
+    if(session_id() == ''){session_start();}
     $video_id = (int)$args['id'];    
     $classvideos = new ClassVideos($this->db);
     $videos =  $classvideos->getTopTen();
@@ -110,7 +114,7 @@ $app->get('/play/{id}', function (Request $request, Response $response, $args) {
 });
 
 $app->get('/votes/{id}', function (Request $request, Response $response, $args) {    
-    session_start();
+    if(session_id() == ''){session_start();}
     $video_id = (int)$args['id'];    
     $islike = false;
     $disableBtnLike = "";
@@ -140,7 +144,7 @@ $app->get('/votes/{id}', function (Request $request, Response $response, $args) 
 });
 
 $app->get('/register', function (Request $request, Response $response, array $args) {
-    session_start();    
+    if(session_id() == ''){session_start();}    
     if(  isset($_SESSION['username']) )
     {
         return $response->withRedirect('/');
@@ -177,7 +181,7 @@ $app->post('/register', function (Request $request, Response $response, array $a
 
 //for searching video
 $app->get('/search-video', function (Request $request, Response $response, $args) {
-     session_start();  
+     if(session_id() == ''){session_start();}  
     return $this->view->render($response, 'search-video.phtml', ["router" => $this->router]);
 });
 
@@ -252,7 +256,7 @@ $app->post('/search-video', function (Request $request, Response $response, $arg
 
 // test new login
 $app->get('/old-login', function (Request $request, Response $response, array $args) {
-	session_start();	
+	if(session_id() == ''){session_start();}	
 	if(  isset($_SESSION['username']) )
 	{
 		return $response->withRedirect('/');
