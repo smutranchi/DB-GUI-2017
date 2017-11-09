@@ -23,7 +23,7 @@ class ClassVideos
 
     public function getTopTen() {
         $sql = "SELECT *
-            from videos ORDER BY votes DESC";
+            from videos ORDER BY votes DESC LIMIT 0, 10";
             
         $stmt = $this->db->query($sql);
 
