@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +6,16 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app';
+  @Input() component: String;
+  title = 'app.component.ts';
+  show = true;
+
+  constructor() {
+    if (this.component === 'register') {
+      this.show = true;
+    }
+    else {
+      this.show = false;
+    }
+  }
 }
