@@ -2,6 +2,11 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.5.2.
 
+## Configure DB/GUI Project
+
+On the root level folder `frontend` run `npm install` before you do anything. If your local angular cli version is lower than 1.5.2., please update it using commands at : https://github.com/angular/angular-cli#updating-angular-cli. After the angular cli is updated, run `npm install`
+
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
