@@ -25,8 +25,16 @@ $app->get('/', function (Request $request, Response $response, array $args) {
     if(session_id() == ''){
         session_start(); 
     } 
-    $classvideos = new ClassVideos($this->db);
-    $videos =  $classvideos->getVideos();
+	$sql = "SELECT *
+            from videos t";
+
+        $stmt = $this->db->query($sql);
+
+        $results = [];
+        while($row = $stmt->fetch()) {
+            $results[] = $row;
+        }
+    $videos =  
     // Render index view
     return $this->view->render($response, 'index.phtml', ["videos" => $videos, "router" => $this->router]);
 });
@@ -52,36 +60,35 @@ $app->get('/login', function (Request $request, Response $response, array $args)
 });
 
 $app->get('/logout', function (Request $request, Response $response, array $args) {
-	if(session_id() == ''){session_start();}	
-	session_destroy();
-	unset($_SESSION['username']);
-    return $response->withRedirect('/'); 
+	//if(session_id() == ''){session_start();}	
+	//	session_destroy();
+    return $response;
 });
 
 $app->post('/login', function (Request $request, Response $response, array $args) {
-    $messager = "";
-    $user = new ClassUsers($this->db);
     
     $json = $request->getBody();   
     $mydata = json_decode($json,true);    
     $username = $mydata["username"];
     $pass = $mydata["password"];
 
-    $check = $user->checkLogin($username,$pass);
+      $sql = "SELECT user_id
+            from users WHERE username = '$username' AND password = '$pass'";
+	$stmt = $this->db->query($sql);
 
-    
-    $url = "";
-    if(!$check)
-        $messager = "Please input corect username and password!";
-    else
-    {    
-        if(session_id() == ''){session_start();}    
-        $_SESSION['username']=$username;
+        $results = [];
+        while($row = $stmt->fetch()) {
+            $results[] = $row;
+        }
+    $url = " ";
+    	if(count($results)> 0 ? true : false){
+	if(session_id() == ''){session_start();}   
         $url = "/";
-    }
-    $data = array('messager' => $messager , 'url' => $url);   
-    return $response->withJson($data,200,
-        JSON_UNESCAPED_UNICODE);    
+	}  
+	$myJSON = json_encode($results);
+	
+      
+    return $response->$myJSON;
 });
 
 $app->get('/addvideos', function (Request $request, Response $response) {    
