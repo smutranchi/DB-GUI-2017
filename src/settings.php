@@ -16,11 +16,11 @@ return [
             'level' => \Monolog\Logger::DEBUG,
         ],
         //connection settings
-        'db' => [
-            'host' => 'myplaylist.cycoalcmburk.us-east-1.rds.amazonaws.com',
-            'user' => 'dbguidev',
-            'pass' => 'dbguiproject',
-            'dbname' => 'myplaylist'
-        ]
-    ],
+       	"db" => [
+	   "host" => "localhost",
+	   "dbname" => "class1",
+	   "user" => "root",
+	   "pass" => "abc123"
+	],
+    ], 
 ];
