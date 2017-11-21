@@ -18,9 +18,9 @@ return [
         //connection settings
        	"db" => [
 	   "host" => "localhost",
-	   "dbname" => "class1",
+	   "dbname" => "myplaylist",
 	   "user" => "root",
-	   "pass" => "abc123"
+	   "pass" => "Rkck1024"
 	],
     ], 
 ];

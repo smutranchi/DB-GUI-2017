@@ -56,7 +56,7 @@ $app->get('/login', function (Request $request, Response $response, array $args)
 		return $response->withRedirect('/');
 	}
     $messager = "";
-    return $this->view->render($response, 'login.phtml', ["messager" => $messager, "router" => $this->router]);
+    return $request;
 });
 
 $app->get('/logout', function (Request $request, Response $response, array $args) {
@@ -86,7 +86,7 @@ $app->post('/login', function (Request $request, Response $response, array $args
         $url = "/";
 	}  
 	$myJSON = json_encode($results);
-	
+	$response = $response->withRedirect('/');	
       
     return $response->$myJSON;
 });
