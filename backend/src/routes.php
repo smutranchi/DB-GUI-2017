@@ -144,13 +144,8 @@ $app->get('/votes/{id}', function (Request $request, Response $response, $args) 
 });
 
 $app->get('/register', function (Request $request, Response $response, array $args) {
-    if(session_id() == ''){session_start();}    
-    if(  isset($_SESSION['username']) )
-    {
-        return $response->withRedirect('/');
-    }
-    $messager = "";
-    return $this->view->render($response, 'register.phtml', ["messager" => $messager, "router" => $this->router]);
+    #if(session_id() == ''){session_start();} 
+    return $response->withStatus(200);
 });
 
 $app->post('/checkUserExists', function (Request $request, Response $response, array $args) {   
@@ -168,9 +163,9 @@ $app->post('/checkUserExists', function (Request $request, Response $response, a
 
 $app->post('/register', function (Request $request, Response $response, array $args) {
     $json = $request->getBody();   
-    $mydata = json_decode($json,true);    
-    $username = $mydata["username"];
-    $pass = $mydata["password"];
+    $userData = json_decode($json,true);    
+    $username = $userData["username"];
+    $pass = $userData["password"];
     $user = new ClassUsers($this->db);
     $messager = $user->register($username, $pass);
 
