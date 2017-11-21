@@ -35,24 +35,29 @@ class ClassUsers
         return count($results)> 0 ? true : false;
     }
 
-    public function register($user,$pass) {
+    public function register($user,$pass, $firstName, $lastName, $email) {
         $pass = md5($pass); 
 
         $sql = "insert into users
-            (username, pwd) values
-            (:user, :pass)";
+            (username, password, fName, lName, email) values
+            (:user, :pass, :fName, :lName, :email)";
 
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute([
             "user" => $user,
-            "pass" => $pass
+            "pass" => $pass,
+	    "fName" => $firstName,
+	    "lName" => $lastName,
+	    "email" => $email
         ]);
 
         if(!$result) {
-            return 'Error! No database connection.';
+            return true;
 
         }
-        return 'Thank you for registering!';
+	else{
+        return false; 
+	}
     }
     
 }

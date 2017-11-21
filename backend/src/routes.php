@@ -166,12 +166,18 @@ $app->post('/register', function (Request $request, Response $response, array $a
     $userData = json_decode($json,true);    
     $username = $userData["username"];
     $pass = $userData["password"];
+    $fName = $userData["firstName"];
+    $lName = $userData["lastName"];
+    $email = $userData["email"];
     $user = new ClassUsers($this->db);
-    $messager = $user->register($username, $pass);
-
-    $data = array('messager' => $messager , 'username' => $username);   
-   return $response->withJson($data,200,
+    if($user->register($username, $pass){
+    $data = array('username' => $username);   
+    return $response->withJson($data,200,
         JSON_UNESCAPED_UNICODE);
+    }
+    else{
+	return $response->withRedirect('/register');
+    }
 });
 
 //for searching video
