@@ -49,10 +49,11 @@ class ClassVideos
 
     public function AddNewVideo($title, $link) {
         //$sql = "INSERT INTO videos (title,link,votes) VALUES('$title','$link',0)";
-
-        $sql = "insert into videos
-            (title, link, votes) values
-            (:title, :link, :votes )";
+	$sql = " SELECT count(*) FROM  library WHERE url = :link AND title = :title";
+	
+        //$sql = "insert into videos
+        //    (title, link, votes) values
+        //    (:title, :link, :votes )";
 		
 
 		function get_youtube_id_from_url($url)
@@ -63,20 +64,22 @@ class ClassVideos
 				{@preg_match('/(https:|http:|):(\/\/www\.|\/\/|)(.*?)\/(embed\/|watch.*?v=|)([a-z_A-Z0-9\-]{11})/i', $url, $IDD); return $IDD[5]; }
 			}
 
-
 			$stmt = $this->db->prepare($sql);
 			$result = $stmt->execute([
             "title" => $title,
             "link" => get_youtube_id_from_url($link),
-            "votes" => 0,
         ]);
 
 			if(!$result) {
-				return 'Error! No database connection.';
-
+				$sql = "INSERT INTO library (url,title) VALUES ("$link","$title")";
+				$stmt = $this->db->query($sql);
+				$JSON = json_encode($result);
+				return $JSON;
 			}
-			return 'New Youtube Video has been added!';
-		
+			else{	
+				$JSON = json_encode($result);
+				return $JSON;
+			}
     }
 
     public function VotesVideo($id, $votes) {

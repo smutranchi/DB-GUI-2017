@@ -87,8 +87,8 @@ $app->post('/login', function (Request $request, Response $response, array $args
 	}  
 	$myJSON = json_encode($results);
 	$response = $response->withRedirect('/');	
-      
-    return $response->$myJSON;
+	$response = $response->withJSON($myJSON);      
+    return $response;
 });
 
 $app->get('/addvideos', function (Request $request, Response $response) {    
@@ -97,17 +97,19 @@ $app->get('/addvideos', function (Request $request, Response $response) {
 	{
 		return $response->withRedirect('/login');
 	}
-    return $this->view->render($response, 'addvideo.phtml', ["router" => $this->router]);
+    return $response;
 });
 
 $app->post('/addvideos', function (Request $request, Response $response) {    
 	
 	$data = $request->getParsedBody();	
 	$title = filter_var($data['txttitle'], FILTER_SANITIZE_STRING);
-    $link = filter_var($data['txtlink'], FILTER_SANITIZE_STRING);
-    $classvideos = new ClassVideos($this->db);
-    $addvideo =  $classvideos->AddNewVideo($title, $link);    
-    return $this->view->render($response, 'addvideo.phtml', ["addvideo" => $addvideo, "router" => $this->router]);
+   	$link = filter_var($data['txtlink'], FILTER_SANITIZE_STRING);
+   	$classvideos = new ClassVideos($this->db);
+   	$addvideo =  $classvideos->AddNewVideo($title, $link);
+	$response = $response->withJSON($addvideo);
+	$response = $response->withRedirect("/playlist/{id}");
+    return $response;
 });
 
 $app->get('/play/{id}', function (Request $request, Response $response, $args) {
@@ -189,7 +191,7 @@ $app->post('/register', function (Request $request, Response $response, array $a
 //for searching video
 $app->get('/search-video', function (Request $request, Response $response, $args) {
      if(session_id() == ''){session_start();}  
-    return $this->view->render($response, 'search-video.phtml', ["router" => $this->router]);
+    return $response;
 });
 
 $app->post('/search-video', function (Request $request, Response $response, $args) {
@@ -257,8 +259,11 @@ $app->post('/search-video', function (Request $request, Response $response, $arg
 		$message .= sprintf('<p>An client error occurred: <code>%s</code></p>',
 		htmlspecialchars($e->getMessage()));
 	}
-    $message = count($listVideo);
-    return $this->view->render($response, 'search-video.phtml', ["keyword" => $keyword, "message" => $message, "videos" => $videos, "listVideo" => $listVideo, "router" => $this->router]);
+	$message = count($listVideo);
+	$JSON = json_encode($listVideos);
+	$response = $response->withJSON($JSON);
+	$response = $response ->withRedirect("/search-video");
+	return $response;
 });
 
 // test new login
