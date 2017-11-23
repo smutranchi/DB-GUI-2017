@@ -7,6 +7,7 @@ import { Location } from '@angular/common';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 
 // internal module
+import { AppRoutingModule } from './module/app-routing.module';
 
 // internal components
 import { AppComponent } from './app.component';
@@ -17,12 +18,9 @@ import { ViewPlaylistComponent } from './module/view-playlist/view-playlist.comp
 import { AddPlaylistComponent } from './module/add-playlist/add-playlist.component';
 import { AddVideoComponent } from './module/add-video/add-video.component';
 import { ViewVideoComponent } from './module/view-video/view-video.component';
+import { HomePageComponent } from './home/home-page/home-page.component';
+import { LandingPageComponent } from './home/landing-page/landing-page.component';
 
-const routes: Routes = [
-  { path: 'register', component: RegisterComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'logout', component: LogoutComponent }
-];
 
 @NgModule({
   declarations: [
@@ -33,13 +31,16 @@ const routes: Routes = [
     ViewPlaylistComponent,
     AddPlaylistComponent,
     AddVideoComponent,
-    ViewVideoComponent
+    ViewVideoComponent,
+    HomePageComponent,
+    LandingPageComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    RouterModule.forRoot(routes)
+    // RouterModule.forRoot(routes),
+    AppRoutingModule
   ],
   providers: [Location],
   bootstrap: [AppComponent]
