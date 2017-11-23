@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { Routes, RouterModule } from '@angular/router';
 import { Location } from '@angular/common';
+import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 
 // internal module
 
