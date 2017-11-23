@@ -73,7 +73,12 @@
 	}
 
 	body {
-		background: #424a50;
+		/* light fade out */
+		/* background: #424a50; */
+
+		/* original black */
+		background: #131416;
+		
 	}
 
 		body.is-loading *, body.is-loading *:before, body.is-loading *:after, body.is-switching *, body.is-switching *:before, body.is-switching *:after {
