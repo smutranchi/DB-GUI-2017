@@ -3,7 +3,9 @@
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+
 require __DIR__ . '/../vendor/autoload.php';
+
 //require __DIR__ . '/../classes/ClassVideos.php';
 //require __DIR__ . '/../classes/ClassUsers.php';
 //require __DIR__ . '/../classes/ClassUsersLikeVideos.php';
@@ -21,7 +23,7 @@ $app->get('/songs', function (Request $request, Response $response, array $args)
 });
 
 // Retrieve song with id 
-$app->get('/songs/[{id}]', function ($request, $response, $args) {
+$app->get('/songs/[{id}]', function (Request $request, Response $response, array $args) {
         $pdo = $this->db;
 	$sth = $pdo->prepare('SELECT l.song_id, l.url, a.active_id,
                                 a.user_id, a.playlist_id, a.likes
