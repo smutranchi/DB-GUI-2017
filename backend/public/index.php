@@ -23,9 +23,10 @@ require __DIR__ . '/../src/dependencies.php';
 // Register middleware
 require __DIR__ . '/../src/middleware.php';
 
-// Register routes
+// Register dynamic routes
 //require __DIR__ . '/../src/routes.php';
-require __DIR__. '/../src/playlist.php';
+require __DIR__ . '/../src/playlist.php';
+require __DIR__ . '/../src/getsongs.php';
 // Run app
 $app->run();
                    
