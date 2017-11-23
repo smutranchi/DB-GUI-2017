@@ -27,6 +27,12 @@ require __DIR__ . '/../src/middleware.php';
 //require __DIR__ . '/../src/routes.php';
 require __DIR__ . '/../src/playlist.php';
 require __DIR__ . '/../src/getsongs.php';
+
+/*dynamic routes that will be added
+// require __DIR__ . '/../src/registration.php';
+// require __DIR__ . '/../src/addsongs.php';
+// require __DIR__ . '/../src/addplaylists.php';
+// require __DIR__ . '/../src/userprofile.php'; (optional)
 // Run app
 $app->run();
                    
