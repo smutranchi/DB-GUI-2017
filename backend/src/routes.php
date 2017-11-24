@@ -25,18 +25,19 @@ $app->get('/', function (Request $request, Response $response, array $args) {
     if(session_id() == ''){
         session_start(); 
     } 
-	$sql = "SELECT *
-            from videos t";
+	//$sql = "SELECT *
+          //  from videos t";
 
-        $stmt = $this->db->query($sql);
+        //$stmt = $this->db->query($sql);
 
-        $results = [];
-        while($row = $stmt->fetch()) {
-            $results[] = $row;
-        }
-    $videos =  
+        //$results = [];
+        //while($row = $stmt->fetch()) {
+        //    $results[] = $row;
+        //}
+//    $videos =  
     // Render index view
-    return $this->view->render($response, 'index.phtml', ["videos" => $videos, "router" => $this->router]);
+//    return $this->view->render($response, 'index.phtml', ["videos" => $videos, "router" => $this->router]);
+	return $response;
 });
 
 $app->get('/topten', function (Request $request, Response $response, array $args) {
@@ -66,12 +67,10 @@ $app->get('/logout', function (Request $request, Response $response, array $args
 });
 
 $app->post('/login', function (Request $request, Response $response, array $args) {
-    
     $json = $request->getBody();   
     $mydata = json_decode($json,true);    
     $username = $mydata["username"];
     $pass = $mydata["password"];
-
       $sql = "SELECT user_id
             from users WHERE username = '$username' AND password = '$pass'";
 	$stmt = $this->db->query($sql);
@@ -85,7 +84,7 @@ $app->post('/login', function (Request $request, Response $response, array $args
 	if(session_id() == ''){session_start();}   
         $url = "/";
 	}  
-	$myJSON = json_encode($results);
+	$myJSON = json_encode(array($results));
 	$response = $response->withRedirect('/');	
 	$response = $response->withJSON($myJSON);      
     return $response;
@@ -101,14 +100,15 @@ $app->get('/addvideos', function (Request $request, Response $response) {
 });
 
 $app->post('/addvideos', function (Request $request, Response $response) {    
-	
-	$data = $request->getParsedBody();	
-	$title = filter_var($data['txttitle'], FILTER_SANITIZE_STRING);
-   	$link = filter_var($data['txtlink'], FILTER_SANITIZE_STRING);
+	$data = $request->getBody();
+	$data = json_decode($data,true);	
+	$title = $data["title"];
+   	$link = $data["link"];
    	$classvideos = new ClassVideos($this->db);
    	$addvideo =  $classvideos->AddNewVideo($title, $link);
-	$response = $response->withJSON($addvideo);
-	$response = $response->withRedirect("/playlist/{id}");
+	$JSON = json_encode(array("title" => $title, "link" => $link));
+	$response =  $response->withJSON($JSON);
+	//$response =  $response->withRedirect("/");
     return $response;
 });
 
