@@ -34,5 +34,7 @@ require __DIR__ . '/../src/getsongs.php';
 // require __DIR__ . '/../src/addplaylists.php';
 // require __DIR__ . '/../src/userprofile.php'; (optional)
 // Run app
+*/
+
 $app->run();
                    
