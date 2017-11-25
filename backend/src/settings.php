@@ -18,9 +18,9 @@ return [
         //connection settings
        	"db" => [
 	   "host" => "localhost",
-	   "dbname" => "class1",
+	   "dbname" => "testdb",
 	   "user" => "root",
-	   "pass" => "abc123"
+	   "pass" => "NoRegret0208"
 	],
     ], 
 ];
