@@ -28,7 +28,7 @@ class ClassUsers
             
         $stmt = $this->db->query($sql);
 
-        $results = [];
+       $results = [];
         while($row = $stmt->fetch()) {
             $results[] = $row;
         }
@@ -52,11 +52,13 @@ class ClassUsers
         ]);
 
         if(!$result) {
-            return true;
+            return array( "valid" => true,
+			  "userID" => $user);
+			
 
         }
 	else{
-        return false; 
+        return array("valid" => false, "userID" => "null"); 
 	}
     }
     

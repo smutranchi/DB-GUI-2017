@@ -1,5 +1,4 @@
 <?php
-
 use Slim\Http\Request;
 use Slim\Http\Response;
 
@@ -170,15 +169,11 @@ $app->post('/register', function (Request $request, Response $response, array $a
     $lName = $userData["lastName"];
     $email = $userData["email"];
     $user = new ClassUsers($this->db);
-    if($user->register($username, $pass){
-    $data = array('username' => $username);   
-    return $response->withJson($data,200,
+    $returnData = $user->register($username, $pass);
+    if(returnData["valid"] == true){
+        return $response->withJson($returnData,200,
         JSON_UNESCAPED_UNICODE);
-    }
-    else{
-	return $response->withRedirect('/register');
-    }
-});
+   });
 
 //for searching video
 $app->get('/search-video', function (Request $request, Response $response, $args) {
