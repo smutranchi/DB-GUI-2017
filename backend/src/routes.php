@@ -108,11 +108,11 @@ $app->post('/addvideos', function (Request $request, Response $response) {
    	$addvideo =  $classvideos->AddNewVideo($title, $link);
 	$JSON = json_encode(array("title" => $title, "link" => $link));
 	$response =  $response->withJSON($JSON);
-	//$response =  $response->withRedirect("/");
+	$response =  $response->withRedirect("/");
     return $response;
 });
 
-$app->get('/play/{id}', function (Request $request, Response $response, $args) {
+/*$app->get('/play/{id}', function (Request $request, Response $response, $args) {
     if(session_id() == ''){session_start();}
     $video_id = (int)$args['id'];    
     $classvideos = new ClassVideos($this->db);
@@ -120,8 +120,8 @@ $app->get('/play/{id}', function (Request $request, Response $response, $args) {
     $video = $classvideos->getVideoById($video_id);
     $play = $video;
     return $this->view->render($response, 'index.phtml', ["videos" => $videos, "play" => $play,"router" => $this->router]);
-});
-
+});*/
+/*
 $app->get('/votes/{id}', function (Request $request, Response $response, $args) {    
     if(session_id() == ''){session_start();}
     $video_id = (int)$args['id'];    
@@ -150,7 +150,7 @@ $app->get('/votes/{id}', function (Request $request, Response $response, $args) 
     $videos =  $classvideos->getVideos();    
     $play = $classvideos->getVideoById($video_id); 
     return $this->view->render($response, 'index.phtml', ["disableBtnLike" => $disableBtnLike, "videos" => $videos, "play" => $play,"router" => $this->router]);	
-});
+});*/
 
 $app->get('/register', function (Request $request, Response $response, array $args) {
     if(session_id() == ''){session_start();}    
@@ -265,7 +265,7 @@ $app->post('/search-video', function (Request $request, Response $response, $arg
 	$response = $response ->withRedirect("/search-video");
 	return $response;
 });
-
+/*
 // test new login
 $app->get('/old-login', function (Request $request, Response $response, array $args) {
 	if(session_id() == ''){session_start();}	
@@ -275,5 +275,53 @@ $app->get('/old-login', function (Request $request, Response $response, array $a
 	}
     $messager = "";
     return $this->view->render($response, 'old-login.phtml', ["messager" => $messager, "router" => $this->router]);
-});
+});*/
 
+$app->get('/active/{id}', function ( Request $request, Response $response, array $args) {
+	$active_id = (int)$args['id'];
+	$sql = " SELECT url FROM library INNER JOIN
+		active WHERE acive_id = '$active_id' ON library.song_id = active.song_id;"
+	$urls = $this->db->query($sql);
+	$JSON = json_encode(array($urls));
+	$response = $response->withJSON($JSON);
+	$response = $response->withRedirect("/active/" + $active_id);
+	return $response;
+}
+
+$app->post('/active/{id}/{song_id}',  function ( Request $request, Response $response, array $args) {
+	$data = $request->getBody();
+	$mydata = json_decode($json,true);
+        $active_id = ["active_id"];
+	$song_id = ["song_id"];
+	$user_id = ["user_id"];
+	$sql = "SELECT access_code  FROM active WHERE active_id = '$active_id' INNER JOIN 
+		playlists ON active.playlist_id = playlists.playlist_id;";
+	$access_code = $this->db->query($sql);
+	$sql = "SELECT access_id FROM access WHERE access_code = '$access_code' 
+		AND user_id = '$user_id';";
+	$access_id = $this->db->query($sql);
+	$sql = " SELECT count(*) FROM user_likes WHERE user_id = '$user_id' AND access_id = '$access_id' 
+		AND song_id = '$song_id';";
+	$stmt = $this->db->query($sql);
+	$results = [];
+        while($row = $stmt->fetch()) {
+        	$results[] = $row;
+        }
+	//check if the user already liked the video
+        if(!is_null($results)){
+	$response = $response->withRedirect("/active/{id}");
+	//might need to return some stuff JSON later
+	return	$response;	
+	}
+	$sql = "UPDATE access_id SET likes = likes + 1;";
+	$this->db->query($sql);
+	$sql = "INSERT INTO user_likes (access_id, user_id, song_id) VALUES 
+		('$access_id','$user_id','$song_id');";
+	$this->db->query($sql);
+	$response = $response->withRedirect("/active/{id}");
+	//might need to return some stuff JSON later
+	return $response;
+}
+
+
+			
