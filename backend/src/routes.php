@@ -251,6 +251,7 @@ $app->post('/search-video', function (Request $request, Response $response, $arg
 });
 
 // test new login
+/*
 $app->get('/old-login', function (Request $request, Response $response, array $args) {
 	if(session_id() == ''){session_start();}	
 	if(  isset($_SESSION['username']) )
@@ -260,8 +261,9 @@ $app->get('/old-login', function (Request $request, Response $response, array $a
     $messager = "";
     return $this->view->render($response, 'old-login.phtml', ["messager" => $messager, "router" => $this->router]);
 });
-
+*/
 $app->put('/changePassword', function(Request $request, Response $response, array $args){
+//TODO: fix error handling from status 405 to status 418
     $json = $request->getBody();   
     $userData = json_decode($json,true);    
     $user = $userData["username"];
@@ -270,7 +272,7 @@ $app->put('/changePassword', function(Request $request, Response $response, arra
     $userObj = new ClassUsers($this->db);
     if($userObj->checkLogin($user,$pass)){
         $pass = md5($newPass);
-        $sql = "UPDATE users SET password = '$user' WHERE username = '$user'"; 
+        $sql = "UPDATE users SET password = '$pass' WHERE username = '$user'"; 
         $stmt = $this->db->prepare($sql);
         $result = $stmt->execute(); 
         if($result){
