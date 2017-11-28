@@ -21,13 +21,7 @@ require __DIR__ . '/../classes/ClassUsersLikeVideos.php';
 });*/
 //homepage of the video
 $app->get('/', function (Request $request, Response $response, array $args) {
-    if(session_id() == ''){
-        session_start(); 
-    } 
-    $classvideos = new ClassVideos($this->db);
-    $videos =  $classvideos->getVideos();
-    // Render index view
-    return $this->view->render($response, 'index.phtml', ["videos" => $videos, "router" => $this->router]);
+    return $response->withStatus(200);
 });
 
 $app->get('/topten', function (Request $request, Response $response, array $args) {
@@ -286,6 +280,14 @@ $app->put('/changePassword', function(Request $request, Response $response, arra
     else{
         return $response->withRedirect('/changePassword');
     }
+});
+
+$app->get('/songs/{id}', function(Request $request, Response $response, array $arts) {
+    $sql = "SELECT l.url, a.likes, u.username, p.title FROM active as a NATURAL JOIN library as l,
+NATURAL JOIN users as u NATURAL JOIN playlists as p WHERE p.playlist_id = :id";
+    $query = $this->db->prepare($sql);
+    $query->bindParam("id", $args["id"]);
+    echo $query->execute();
 });
 
 
