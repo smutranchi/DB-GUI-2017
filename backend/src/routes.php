@@ -169,10 +169,10 @@ $app->post('/register', function (Request $request, Response $response, array $a
     $lName = $userData["lastName"];
     $email = $userData["email"];
     $user = new ClassUsers($this->db);
-    $returnData = $user->register($username, $pass);
-    if(returnData["valid"] == true){
-        return $response->withJson($returnData,200,
-        JSON_UNESCAPED_UNICODE);
+    $returnData = $user->register($username, $pass, $fName, $lName, $email);
+    if($returnData["valid"] == true){
+    return $response->withJson($returnData,200, JSON_UNESCAPED_UNICODE);
+    }
    });
 
 //for searching video
@@ -260,4 +260,31 @@ $app->get('/old-login', function (Request $request, Response $response, array $a
     $messager = "";
     return $this->view->render($response, 'old-login.phtml', ["messager" => $messager, "router" => $this->router]);
 });
+
+$app->put('/changePassword', function(Request $request, Response $response, array $args){
+    $json = $request->getBody();   
+    $userData = json_decode($json,true);    
+    $user = $userData["username"];
+    $pass = $userData["password"];
+    $newPass = $userData["newPassword"];
+    $userObj = new ClassUsers($this->db);
+    if($userObj->checkLogin($user,$pass)){
+        $pass = md5($newPass);
+        $sql = "UPDATE users SET password = '$user' WHERE username = '$user'"; 
+        $stmt = $this->db->prepare($sql);
+        $result = $stmt->execute(); 
+        if($result){
+            $returnData = array("valid"=>true, "userID" => $user);
+            return $response->withJson($returnData,200, JSON_UNESCAPED_UNICODE);
+        }
+        else{
+            return $response->withStatus(418);  
+        }
+    }
+    else{
+        return $response->withRedirect('/changePassword');
+    }
+});
+
+
 

@@ -10,8 +10,8 @@ class ClassUsers
 
     public function checkLogin($user,$pass) {
         $pass = md5($pass); 
-        $sql = "SELECT *
-            from users WHERE username = '$user' AND pwd = '$pass'";
+        $sql = "SELECT username, password 
+            from users WHERE username = '$user' AND password = '$pass'";
             
         $stmt = $this->db->query($sql);
 
@@ -51,7 +51,7 @@ class ClassUsers
 	    "email" => $email
         ]);
 
-        if(!$result) {
+        if($result) {
             return array( "valid" => true,
 			  "userID" => $user);
 			
